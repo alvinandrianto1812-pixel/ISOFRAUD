@@ -1,0 +1,17 @@
+{
+  "strategy": "Undersampling",
+  "training_pool": {
+    "total": 14300,
+    "fraud": 6500,
+    "normal": 7800,
+    "fraud_pct": 45.45454545454545,
+    "ratio": 1.2
+  },
+  "demo_set": {
+    "total": 3713,
+    "fraud": 1713,
+    "normal": 2000,
+    "fraud_pct": 46.1352006463776
+  },
+  "random_state": 42
+}

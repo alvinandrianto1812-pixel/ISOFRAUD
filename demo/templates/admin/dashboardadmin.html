@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Fraud Detection</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
+      :root {
+        --primary: #4e54c8;
+        --secondary: #8f94fb;
+        --accent: #00d2ff;
+        --dark-bg: #0f172a;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-light: #f8fafc;
+        --text-dim: #94a3b8;
+        --danger: #ef4444;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      body {
+        background: radial-gradient(circle at top left, #1a1c2c, #000000);
+        color: var(--text-light);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Navbar Luxury */
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.2rem 5%;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--glass-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .brand-logo {
+        font-size: 1.4rem;
+        font-weight: 700;
+        background: linear-gradient(to right, #fff, #a5b4fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .admin-badge {
+        background: #ef4444;
+        color: #ffffff;
+        padding: 5px 14px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: none;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        -webkit-text-fill-color: white;
+        flex-shrink: 0;
+        white-space: nowrap;
+        display: inline-block;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .user-email {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+      }
+      .btn-logout {
+        padding: 10px 28px;
+        border-radius: 50px;
+        background: #ef4444; 
+        border: none; 
+        color: white; 
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); 
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-logout:hover {
+        background: #dc2626; 
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(239, 68, 68, 0.5);
+      }
+      /* Layout */
+      .container {
+        max-width: 1200px;
+        margin: 4rem auto;
+        padding: 0 20px;
+      }
+      .welcome-section {
+        text-align: center;
+        margin-bottom: 4rem;
+        animation: fadeIn 1s ease-out;
+      }
+      .welcome-section h2 {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .welcome-section p {
+        color: var(--text-dim);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Cards */
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2.5rem;
+      }
+      .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 2.5rem;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+      }
+      .glass-card:hover {
+        transform: translateY(-15px);
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      /* Card Elements */
+      .icon-wrapper {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 1.8rem;
+        color: var(--accent);
+        transition: 0.4s;
+        border: 1px solid var(--glass-border);
+      }
+      .glass-card:hover .icon-wrapper {
+        background: var(--accent);
+        color: var(--dark-bg);
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 0 20px var(--accent);
+      }
+
+      .glass-card h3 {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
+      .glass-card p {
+        color: var(--text-dim);
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        min-height: 3rem;
+      }
+
+      .btn-action {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      /* Button Variants */
+      .btn-users {
+        background: linear-gradient(45deg, #ff512f, #dd2476);
+        color: white;
+      }
+      .btn-eval {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        color: white;
+      }
+      .btn-data {
+        background: linear-gradient(45deg, #43e97b, #38f9d7);
+        color: #1a1c2c;
+      }
+
+      .btn-action:hover {
+        transform: scale(1.02);
+        filter: brightness(1.1);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .delay-1 {
+        animation-delay: 0.1s;
+      }
+      .delay-2 {
+        animation-delay: 0.2s;
+      }
+      .delay-3 {
+        animation-delay: 0.3s;
+      }
+      .animate-in {
+        animation: fadeIn 0.8s ease-out forwards;
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="brand-logo">
+        <i class="fas fa-shield-alt"></i>
+        IsoFraud 
+        <span class="admin-badge">Admin</span>
+      </div>
+      <div class="user-info">
+        <span class="user-email">{{ admin_email }}</span>
+        <a href="{{ url_for('logout') }}" class="btn-logout">
+          <i class="fas fa-sign-out-alt"></i> Sign Out
+        </a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="welcome-section">
+        <h2>Dashboard Admin</h2>
+        <p>
+          Pantau aktivitas user, kelola dataset, dan evaluasi kinerja model
+          machine learning
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <div class="glass-card animate-in delay-1">
+          <div class="icon-wrapper">
+            <i class="fas fa-users-cog"></i>
+          </div>
+          <h3>Kelola Pengguna</h3>
+          <p>
+            Monitor aktivitas user terdaftar, hapus akun, dan lihat statistik
+            upload.
+          </p>
+          <a href="{{ url_for('admin_users') }}" class="btn-action btn-users">
+            Akses User Manager
+            <i class="fas fa-arrow-right" style="margin-left: 8px"></i>
+          </a>
+        </div>
+
+        <div class="glass-card animate-in delay-2">
+          <div class="icon-wrapper">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3>Evaluasi Model</h3>
+          <p>
+            Analisis performa model Isolation Forest dengan metrik akurasi, ROC,
+            dan PR Curve.
+          </p>
+          <a
+            href="{{ url_for('admin_evaluation') }}"
+            class="btn-action btn-eval"
+          >
+            Lihat Laporan
+            <i class="fas fa-arrow-right" style="margin-left: 8px"></i>
+          </a>
+        </div>
+
+        <div class="glass-card animate-in delay-3">
+          <div class="icon-wrapper">
+            <i class="fas fa-database"></i>
+          </div>
+          <h3>Dataset Lab</h3>
+          <p>
+            Inspect data mentah dan hasil Feature Engineering untuk validasi
+            proses.
+          </p>
+          <a
+            href="{{ url_for('admin_dataset_preview') }}"
+            class="btn-action btn-data"
+          >
+            Buka Lab Data
+            <i class="fas fa-arrow-right" style="margin-left: 8px"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.querySelectorAll(".glass-card").forEach((card) => {
+        card.addEventListener("mousemove", (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.1), rgba(255,255,255,0.05))`;
+        });
+        card.addEventListener("mouseleave", () => {
+          card.style.background = "rgba(255, 255, 255, 0.05)";
+        });
+      });
+    </script>
+  </body>
+</html>

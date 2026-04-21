@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up | Fraud Detection System</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
+      * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+
+      body {
+        background: #0f172a;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* Background Elements (Glows) */
+      .circle-glow {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        z-index: 0;
+        animation: float 10s infinite ease-in-out;
+      }
+      .glow-1 { width: 300px; height: 300px; background: #4e54c8; top: -50px; left: -50px; }
+      .glow-2 { width: 400px; height: 400px; background: #ff0055; bottom: -100px; right: -100px; animation-delay: 2s; }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(20px) scale(1.1); }
+      }
+
+      /* Main Container */
+      .container {
+        position: relative;
+        z-index: 1;
+        width: 1000px;
+        max-width: 90%;
+        height: 650px; 
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        display: flex;
+        overflow: hidden;
+      }
+
+      /* LEFT SIDE: FORM */
+      .form-side {
+        flex: 1;
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        color: white;
+        z-index: 2;
+      }
+
+      .brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        background: linear-gradient(to right, #fff, #a5b4fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      h2 { font-size: 2rem; margin-bottom: 5px; }
+      p.subtitle { color: #94a3b8; margin-bottom: 20px; font-size: 0.9rem; }
+
+      .input-group { margin-bottom: 15px; position: relative; }
+      .input-group i {
+        position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+        color: #94a3b8; transition: 0.3s;
+      }
+
+      .input-field {
+        width: 100%; padding: 15px 15px 15px 45px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: white; font-size: 0.95rem; outline: none; transition: 0.3s;
+      }
+
+      .input-field:focus {
+        border-color: #4facfe; background: rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 15px rgba(79, 172, 254, 0.3);
+      }
+      .input-field:focus + i { color: #4facfe; }
+
+      .btn-submit {
+        width: 100%; padding: 15px; border: none; border-radius: 10px;
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        color: white; font-weight: 700; font-size: 1rem; cursor: pointer;
+        transition: 0.3s; box-shadow: 0 5px 15px rgba(0, 242, 254, 0.3); margin-top: 10px;
+      }
+      .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 242, 254, 0.5); }
+
+      .switch-text { text-align: center; margin-top: 20px; color: #94a3b8; font-size: 0.9rem; }
+      .switch-text a { color: #4facfe; text-decoration: none; font-weight: 600; }
+      .switch-text a:hover { text-decoration: underline; }
+
+      .alert-box { padding: 10px; margin-bottom: 15px; border-radius: 8px; font-size: 0.85rem; text-align: center; }
+      .alert-error { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; }
+      .alert-success { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #6ee7b7; }
+
+      /* RIGHT SIDE: ANIMATION */
+      .visual-side {
+        flex: 1;
+        position: relative;
+        height: 100%; 
+        display: flex; 
+        align-items: center;
+        justify-content: center;
+        perspective: 1000px;
+      }
+
+      .character-card {
+        width: 400px;
+        height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        transform-style: preserve-3d;
+        transition: transform 0.1s ease-out;
+      }
+
+      .character-card i {
+         filter: drop-shadow(0 20px 30px rgba(0, 210, 255, 0.4));
+         animation: floatIcon 4s ease-in-out infinite;
+      }
+
+      @keyframes floatIcon {
+         0%, 100% { transform: translateY(0) scale(1); }
+         50% { transform: translateY(-15px) scale(1.02); }
+      }
+
+      @media (max-width: 768px) {
+        .container { flex-direction: column; height: auto; margin: 20px; }
+        .visual-side { display: none; }
+        .form-side { padding: 40px 20px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="circle-glow glow-1"></div>
+    <div class="circle-glow glow-2"></div>
+
+    <div class="container">
+      <div class="form-side">
+        <div class="brand"><i class="fas fa-shield-alt"></i>IsoFraud</div>
+        <h2>Create Account</h2>
+        <p class="subtitle">Bergabunglah untuk mulai mendeteksi fraud.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div class="alert-box alert-{{ category }}">{{ message }}</div>
+        {% endfor %} {% endif %} {% endwith %}
+
+        <form method="POST" action="{{ url_for('signup_page') }}">
+          <div class="input-group">
+            <input type="email" name="email" class="input-field" placeholder="Email Address" required />
+            <i class="fas fa-envelope"></i>
+          </div>
+          
+          <div class="input-group">
+            <input type="password" name="password" class="input-field" placeholder="Password" required />
+            <i class="fas fa-lock"></i>
+          </div>
+          
+          <div class="input-group">
+            <input type="password" name="confirm_password" class="input-field" placeholder="Confirm Password" required />
+            <i class="fas fa-check-circle"></i>
+          </div>
+
+          <button type="submit" class="btn-submit">SIGN UP</button>
+        </form>
+
+        <div class="switch-text">
+          Sudah punya akun? <a href="{{ url_for('signin_page') }}">Login Sekarang</a>
+        </div>
+      </div>
+
+      <div class="visual-side" id="sceneContainer">
+          <div class="character-card" id="tiltElement">
+             <i class="fas fa-user-shield" 
+                style="font-size: 10rem; 
+                       background: linear-gradient(to bottom, #00c6ff, #0072ff); 
+                       -webkit-background-clip: text; 
+                       -webkit-text-fill-color: transparent;">
+             </i>
+          </div>
+      </div>
+
+    </div>
+
+    <script>
+      const container = document.getElementById("sceneContainer");
+      const card = document.getElementById("tiltElement");
+
+      container.addEventListener("mousemove", (e) => {
+        const rect = container.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        const rotateY = x * 40; 
+        const rotateX = y * -40; 
+
+        card.style.transform = `
+          perspective(1000px)
+          rotateX(${rotateX}deg)
+          rotateY(${rotateY}deg)
+          scale(1.05)
+        `;
+      });
+
+      container.addEventListener("mouseleave", () => {
+        card.style.transform = `
+          perspective(1000px)
+          rotateX(0deg)
+          rotateY(0deg)
+          scale(1)
+        `;
+      });
+    </script>
+  </body>
+</html>

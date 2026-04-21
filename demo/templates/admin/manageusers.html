@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kelola User | IsoFraud  Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
+      :root {
+        --primary: #4e54c8;
+        --secondary: #8f94fb;
+        --accent: #00d2ff;
+        --dark-bg: #0f172a;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-light: #f8fafc;
+        --text-dim: #94a3b8;
+        --success: #10b981;
+        --danger: #ef4444;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      body {
+        background: radial-gradient(circle at top left, #1a1c2c, #000000);
+        color: var(--text-light);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* --- NAVBAR ADMIN --- */
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.2rem 5%;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--glass-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .brand-logo {
+        font-size: 1.4rem;
+        font-weight: 700;
+        background: linear-gradient(to right, #fff, #a5b4fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      /* BADGE ADMIN (Merah) */
+      .admin-badge {
+        background: #ef4444;
+        color: #ffffff;
+        padding: 5px 14px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        -webkit-text-fill-color: white;
+        flex-shrink: 0;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .user-email {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+      }
+
+      .btn-logout {
+        padding: 10px 28px;
+        border-radius: 50px;
+        background: #ef4444;
+        border: none;
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-logout:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(239, 68, 68, 0.5);
+      }
+
+      /* --- CONTAINER & HEADER --- */
+      .container {
+        max-width: 1200px;
+        margin: 3rem auto;
+        padding: 0 20px;
+      }
+
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1.5rem 2rem;
+        border-radius: 20px;
+        border: 1px solid var(--glass-border);
+      }
+      .header-content h2 {
+        font-size: 2rem;
+        margin-bottom: 5px;
+        color: var(--text-light);
+      }
+      .btn-back {
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-back:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* STATS CARDS */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      .stat-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 1.5rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: 0.3s;
+      }
+      .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--accent);
+      }
+      .stat-card h3 {
+        font-size: 0.85rem;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+      .stat-value {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--text-light);
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      }
+      .stat-icon {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 3rem;
+        opacity: 0.1;
+        color: var(--accent);
+      }
+
+      /* TABLE */
+      .table-wrapper {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: 1px solid var(--glass-border);
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      thead {
+        background: rgba(0, 0, 0, 0.3);
+        border-bottom: 1px solid var(--glass-border);
+      }
+      th {
+        padding: 1.5rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+      }
+      tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        transition: 0.2s;
+      }
+      tbody tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      td {
+        padding: 1.5rem;
+        color: var(--text-light);
+        font-size: 0.95rem;
+        vertical-align: middle;
+      }
+
+      /* Delete Button */
+      .btn-delete {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        border: 1px solid var(--danger);
+        padding: 6px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn-delete:hover {
+        background: var(--danger);
+        color: white;
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+      }
+
+      /* Alerts */
+      .alert-container {
+        margin-bottom: 1rem;
+      }
+      .alert {
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        color: white;
+      }
+      .alert-success {
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid var(--success);
+        color: #6ee7b7;
+      }
+      .alert-error {
+        background: rgba(239, 68, 68, 0.2);
+        border: 1px solid var(--danger);
+        color: #fca5a5;
+      }
+
+      /* MODAL (LUXURY) */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        align-items: center;
+        justify-content: center;
+      }
+      .modal.show {
+        display: flex;
+        animation: fadeIn 0.3s;
+      }
+
+      .modal-content {
+        background: #1a1c2c;
+        border: 1px solid var(--glass-border);
+        padding: 2rem;
+        border-radius: 20px;
+        max-width: 450px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+      }
+      /* Efek garis neon di atas modal */
+      .modal-content::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--danger), #ff0055);
+      }
+
+      .modal-icon {
+        font-size: 3rem;
+        color: var(--danger);
+        margin-bottom: 1rem;
+        animation: pulse 1.5s infinite;
+      }
+
+      .modal-content h3 {
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+        font-size: 1.5rem;
+      }
+      .modal-content p {
+        color: var(--text-dim);
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+      }
+      .user-highlight {
+        color: var(--accent);
+        font-weight: bold;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+      }
+
+      .btn-confirm {
+        background: var(--danger);
+        color: white;
+        padding: 10px 24px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.3s;
+      }
+      .btn-confirm:hover {
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+        transform: scale(1.05);
+      }
+
+      .btn-cancel {
+        background: transparent;
+        border: 1px solid var(--text-dim);
+        color: var(--text-dim);
+        padding: 10px 24px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.3s;
+      }
+      .btn-cancel:hover {
+        border-color: var(--text-light);
+        color: var(--text-light);
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.7;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 4rem;
+        color: var(--text-dim);
+      }
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+      }
+
+      @media (max-width: 768px) {
+        .table-wrapper {
+          overflow-x: auto;
+        }
+        .page-header {
+          flex-direction: column;
+          text-align: center;
+          gap: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="brand-logo">
+        <i class="fas fa-shield-alt"></i>
+        IsoFraud 
+        <span class="admin-badge">Admin</span>
+      </div>
+      <div class="user-info">
+        <span class="user-email">{{ admin_email }}</span>
+        <a href="{{ url_for('logout') }}" class="btn-logout">
+          <i class="fas fa-sign-out-alt"></i> Sign Out
+        </a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="page-header">
+        <div class="header-content">
+          <h2>Kelola Pengguna</h2>
+          <p>Manajemen akun user dan data dataset yang tersimpan.</p>
+        </div>
+        <a href="{{ url_for('admin_dashboard_page') }}" class="btn-back">
+          <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+        </a>
+      </div>
+
+      <div id="alert-container" class="alert-container"></div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %} {% endif %} {% endwith %}
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <h3>Total User Terdaftar</h3>
+          <div class="stat-value">{{ users|length }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+          <h3>Total Upload Dataset</h3>
+          <div class="stat-value">
+            {{ users|sum(attribute='upload_count') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        {% if users and users|length > 0 %}
+        <table>
+          <thead>
+            <tr>
+              <th>Email User</th>
+              <th>Tanggal Registrasi</th>
+              <th>Aktivitas Upload</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr id="user-row-{{ user.id }}">
+              <td style="font-weight: 600; color: white">
+                <i
+                  class="fas fa-user-circle"
+                  style="color: var(--accent); margin-right: 8px"
+                ></i>
+                {{ user.email }}
+              </td>
+              <td>
+                {{ user.created_at[:19].replace('T', ' ') if user.created_at
+                else 'N/A' }}
+              </td>
+              <td>
+                <span style="color: var(--accent); font-weight: bold"
+                  >{{ user.upload_count }}</span
+                >
+                file diupload
+              </td>
+              <td>
+                <button
+                  class="btn-delete"
+                  data-user-id="{{ user.id }}"
+                  data-user-email="{{ user.email }}"
+                  onclick="confirmDelete(this)"
+                >
+                  <i class="fas fa-trash-alt"></i> Hapus Akun
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fas fa-users-slash"></i></div>
+          <h3>Belum Ada User</h3>
+          <p>Belum ada pengguna yang mendaftar di sistem IsoFraud .</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3>Hapus Akun Permanen?</h3>
+        <p>
+          Anda akan menghapus user
+          <span id="deleteUserEmail" class="user-highlight"></span>.
+          <br />Tindakan ini akan menghapus
+          <strong>semua dataset dan riwayat</strong> milik user tersebut.
+        </p>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeModal()">Batalkan</button>
+          <button class="btn-confirm" id="confirmDeleteBtn">
+            Ya, Hapus Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const modal = document.getElementById("deleteModal");
+      const confirmBtn = document.getElementById("confirmDeleteBtn");
+      const userEmailSpan = document.getElementById("deleteUserEmail");
+      let userIdToDelete = null;
+
+      function confirmDelete(button) {
+        userIdToDelete = button.getAttribute("data-user-id");
+        const userEmail = button.getAttribute("data-user-email");
+        userEmailSpan.textContent = userEmail;
+        modal.classList.add("show");
+      }
+
+      function closeModal() {
+        modal.classList.remove("show");
+        userIdToDelete = null;
+      }
+
+      confirmBtn.addEventListener("click", function () {
+        if (!userIdToDelete) return;
+
+        // Ubah tombol jadi loading state
+        const originalText = confirmBtn.innerText;
+        confirmBtn.innerText = "Menghapus...";
+        confirmBtn.disabled = true;
+
+        fetch(`/admin/users/delete/${userIdToDelete}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              const row = document.getElementById(`user-row-${userIdToDelete}`);
+              if (row) {
+                row.style.opacity = "0"; // Animasi fade out
+                setTimeout(() => row.remove(), 300);
+              }
+              showAlert("User berhasil dihapus dari database!", "success");
+              closeModal();
+            } else {
+              showAlert(data.error || "Gagal menghapus user", "error");
+            }
+          })
+          .catch((error) => {
+            showAlert("Terjadi kesalahan: " + error.message, "error");
+          })
+          .finally(() => {
+            confirmBtn.innerText = originalText;
+            confirmBtn.disabled = false;
+          });
+      });
+
+      function showAlert(message, type) {
+        const alertContainer = document.getElementById("alert-container");
+        alertContainer.innerHTML = `<div class="alert alert-${type}"><i class="fas fa-info-circle"></i> ${message}</div>`;
+        setTimeout(() => {
+          alertContainer.innerHTML = "";
+        }, 3000);
+      }
+
+      window.onclick = function (event) {
+        if (event.target === modal) closeModal();
+      };
+    </script>
+  </body>
+</html>

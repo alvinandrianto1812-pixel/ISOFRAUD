@@ -1,0 +1,33 @@
+{
+  "feature_names": [
+    "amount",
+    "oldbalanceOrg",
+    "newbalanceOrig",
+    "oldbalanceDest",
+    "newbalanceDest",
+    "Hour",
+    "Day",
+    "IsNight",
+    "IsBusinessHours",
+    "amount_log",
+    "amount_sqrt",
+    "balance_change_orig",
+    "balance_change_orig_pct",
+    "sender_depleted",
+    "balance_change_dest",
+    "balance_change_dest_pct",
+    "receiver_new_account",
+    "expected_balance_orig",
+    "balance_inconsistent",
+    "type_encoded"
+  ],
+  "n_features": 20,
+  "target_column": "isFraud",
+  "dropped_columns": [
+    "isFlaggedFraud",
+    "nameDest",
+    "nameOrig",
+    "step",
+    "type"
+  ]
+}

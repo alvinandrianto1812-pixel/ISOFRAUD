@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riwayat Upload | IsoFraud </title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
+      :root {
+        --primary: #4e54c8;
+        --secondary: #8f94fb;
+        --accent: #00d2ff;
+        --dark-bg: #0f172a;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-light: #f8fafc;
+        --text-dim: #94a3b8;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      body {
+        background: radial-gradient(circle at top left, #1a1c2c, #000000);
+        color: var(--text-light);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* --- NAVBAR --- */
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.2rem 5%;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--glass-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .brand-logo {
+        font-size: 1.4rem;
+        font-weight: 700;
+        background: linear-gradient(to right, #fff, #a5b4fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .user-role {
+        background: #3b82f6;
+        color: #ffffff;
+        padding: 5px 14px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        -webkit-text-fill-color: white;
+        flex-shrink: 0;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .user-email {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        display: none;
+      }
+      @media (min-width: 768px) {
+        .user-email {
+          display: block;
+        }
+      }
+
+      .btn-logout {
+        padding: 10px 28px;
+        border-radius: 50px;
+        background: #ef4444;
+        border: none;
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-logout:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(239, 68, 68, 0.5);
+      }
+
+      /* --- CONTAINER & HEADER --- */
+      .container {
+        max-width: 1200px;
+        margin: 3rem auto;
+        padding: 0 20px;
+      }
+
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1.5rem 2rem;
+        border-radius: 20px;
+        border: 1px solid var(--glass-border);
+      }
+      .header-content h2 {
+        font-size: 2rem;
+        margin-bottom: 5px;
+        color: var(--text-light);
+      }
+      .header-content p {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+      }
+
+      .btn-back {
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-back:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateX(-3px);
+      }
+
+      /* --- TABLE STYLE (LUXURY) --- */
+      .table-wrapper {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: 1px solid var(--glass-border);
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        background: rgba(0, 0, 0, 0.3);
+        border-bottom: 1px solid var(--glass-border);
+      }
+      th {
+        padding: 1.5rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        transition: 0.2s;
+      }
+      tbody tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      td {
+        padding: 1.5rem;
+        color: var(--text-light);
+        font-size: 0.95rem;
+        vertical-align: middle;
+      }
+
+      /* STATUS BADGES */
+      .status-badge {
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-transform: uppercase;
+      }
+      .status-completed {
+        background: rgba(16, 185, 129, 0.2);
+        color: #6ee7b7;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+      }
+      .status-processing {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fcd34d;
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        animation: pulse 2s infinite;
+      }
+      .status-error {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.4);
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.6;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* ACTION BUTTONS */
+      .btn-view {
+        display: inline-block;
+        padding: 8px 18px;
+        background: linear-gradient(45deg, var(--primary), var(--secondary));
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        box-shadow: 0 4px 10px rgba(78, 84, 200, 0.4);
+        transition: 0.3s;
+        border: none;
+      }
+      .btn-view:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(78, 84, 200, 0.6);
+      }
+
+      .btn-wait {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-dim);
+        cursor: not-allowed;
+        padding: 8px 18px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        border: 1px solid var(--glass-border);
+      }
+
+      /* ROBOT MASKOT (KECIL) */
+      .mascot-container {
+        width: 60px;
+        height: 50px;
+        position: relative;
+        display: inline-block;
+        margin-right: 15px;
+      }
+      .mini-bot {
+        width: 100%;
+        height: 100%;
+        background: #0f172a;
+        border: 2px solid var(--accent);
+        border-radius: 12px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+      }
+      .mini-eye {
+        width: 12px;
+        height: 12px;
+        background: #000;
+        border-radius: 50%;
+        border: 1px solid #333;
+        position: relative;
+      }
+      .mini-pupil {
+        width: 5px;
+        height: 5px;
+        background: var(--accent);
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      /* EMPTY STATE */
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-dim);
+      }
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: var(--glass-border);
+      }
+
+      @media (max-width: 768px) {
+        .table-wrapper {
+          overflow-x: auto;
+        }
+        .header-content h2 {
+          font-size: 1.5rem;
+        }
+        .page-header {
+          flex-direction: column;
+          gap: 1rem;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="brand-logo">
+        <i class="fas fa-shield-alt"></i>
+        IsoFraud 
+        <span class="user-role">User</span>
+      </div>
+      <div class="user-info">
+        <span class="user-email">{{ user_email }}</span>
+        <a href="{{ url_for('logout') }}" class="btn-logout">
+          <i class="fas fa-sign-out-alt"></i> Sign Out
+        </a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="page-header">
+        <div style="display: flex; align-items: center">
+          <div class="mascot-container">
+            <div class="mini-bot">
+              <div class="mini-eye"><div class="mini-pupil"></div></div>
+              <div class="mini-eye"><div class="mini-pupil"></div></div>
+            </div>
+          </div>
+          <div class="header-content">
+            <h2>Tabel Riwayat Analisis</h2>
+            <p>Daftar semua dataset yang telah diproses oleh IsoFraud .</p>
+          </div>
+        </div>
+        <a href="{{ url_for('dashboard_page') }}" class="btn-back">
+          <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+        </a>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        style="
+          padding: 1rem;
+          border-radius: 10px;
+          margin-bottom: 1rem;
+          background: rgba(255, 255, 255, 0.1);
+          border-left: 4px solid var(--accent);
+          color: white;
+        "
+      >
+        {{ message }}
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+
+      <div class="table-wrapper">
+        {% if datasets and datasets|length > 0 %}
+        <table>
+          <thead>
+            <tr>
+              <th>Nama File</th>
+              <th>Tanggal Upload</th>
+              <th>Status Deteksi</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for dataset in datasets %}
+            <tr>
+              <td style="font-weight: 600; color: white">
+                <i
+                  class="fas fa-file-csv"
+                  style="color: var(--accent); margin-right: 8px"
+                ></i>
+                {{ dataset.original_filename }}
+              </td>
+              <td>{{ dataset.upload_at[:19].replace('T', ' ') }}</td>
+              <td>
+                {% if dataset.status == 'Completed' %}
+                <span class="status-badge status-completed"
+                  ><i class="fas fa-check-circle"></i> Selesai</span
+                >
+                {% elif dataset.status == 'Processing' %}
+                <span class="status-badge status-processing"
+                  ><i class="fas fa-sync fa-spin"></i> Memproses</span
+                >
+                {% elif dataset.status == 'Error' %}
+                <span class="status-badge status-error"
+                  ><i class="fas fa-exclamation-triangle"></i> Gagal</span
+                >
+                {% else %}
+                <span
+                  class="status-badge"
+                  style="background: rgba(255, 255, 255, 0.1)"
+                  ><i class="fas fa-clock"></i> Pending</span
+                >
+                {% endif %}
+              </td>
+              <td>
+                {% if dataset.status == 'Completed' %}
+                <a
+                  href="{{ url_for('view_report', dataset_id=dataset.dataset_id) }}"
+                  class="btn-view"
+                >
+                  Lihat Hasil
+                  <i class="fas fa-arrow-right" style="margin-left: 5px"></i>
+                </a>
+                {% elif dataset.status == 'Processing' %}
+                <button class="btn-wait" disabled>Mohon Tunggu...</button>
+                {% elif dataset.status == 'Error' %}
+                <button
+                  class="btn-wait"
+                  style="color: var(--danger); border-color: var(--danger)"
+                >
+                  Gagal
+                </button>
+                {% else %}
+                <button class="btn-wait" disabled>...</button>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
+          <h3>Belum Ada Riwayat</h3>
+          <p>
+            Anda belum pernah mengupload file. Silakan kembali ke dashboard
+            untuk memulai.
+          </p>
+          <a
+            href="{{ url_for('dashboard_page') }}"
+            class="btn-view"
+            style="margin-top: 1rem"
+            >Mulai Analisis</a
+          >
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("mousemove", (e) => {
+        const pupils = document.querySelectorAll(".mini-pupil");
+        pupils.forEach((pupil) => {
+          const eye = pupil.parentElement;
+          const rect = eye.getBoundingClientRect();
+          const x = rect.left + rect.width / 2;
+          const y = rect.top + rect.height / 2;
+          const angle = Math.atan2(e.clientY - y, e.clientX - x);
+          const dist = Math.min(2, Math.hypot(e.clientX - x, e.clientY - y)); // Jarak gerak sangat kecil (2px)
+
+          pupil.style.transform = `translate(calc(-50% + ${
+            Math.cos(angle) * dist
+          }px), calc(-50% + ${Math.sin(angle) * dist}px))`;
+        });
+      });
+    </script>
+  </body>
+</html>

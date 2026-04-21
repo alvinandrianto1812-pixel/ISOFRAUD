@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dataset Preview | IsoFraud  Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
+      :root {
+        --primary: #4e54c8;
+        --secondary: #8f94fb;
+        --accent: #00d2ff;
+        --dark-bg: #0f172a;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-light: #f8fafc;
+        --text-dim: #94a3b8;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      body {
+        background: radial-gradient(circle at top left, #1a1c2c, #000000);
+        color: var(--text-light);
+        min-height: 100vh;
+        padding-bottom: 3rem;
+      }
+
+      /* --- NAVBAR --- */
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.2rem 5%;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--glass-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .brand-logo {
+        font-size: 1.4rem;
+        font-weight: 700;
+        background: linear-gradient(to right, #fff, #a5b4fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .admin-badge {
+        background: #ef4444;
+        color: #ffffff;
+        padding: 5px 14px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        -webkit-text-fill-color: white;
+        flex-shrink: 0;
+        border: none;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .user-email {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+      }
+      .btn-logout {
+        padding: 10px 28px;
+        border-radius: 50px;
+        background: #ef4444;
+        border: none;
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-logout:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+      }
+
+      /* --- CONTAINER --- */
+      .container {
+        max-width: 95%;
+        margin: 3rem auto;
+        padding: 0 20px;
+      }
+
+      /* HEADER PAGE */
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        background: var(--glass-bg);
+        padding: 1.5rem 2rem;
+        border-radius: 20px;
+        border: 1px solid var(--glass-border);
+      }
+      .header-content h2 {
+        font-size: 2rem;
+        margin-bottom: 5px;
+        color: var(--text-light);
+      }
+      .header-content p {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+      }
+      .btn-back {
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-back:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* --- DATA CARDS --- */
+      .data-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      }
+      .data-card h3 {
+        color: var(--accent);
+        margin-bottom: 1.5rem;
+        font-size: 1.2rem;
+        border-bottom: 1px solid var(--glass-border);
+        padding-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      /* --- TABLE STYLES --- */
+      .table-wrapper {
+        overflow-x: auto;
+        border-radius: 15px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary) var(--dark-bg);
+      }
+
+      /* Pandas DataFrame Style */
+      .dataframe {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        font-family: "Poppins", sans-serif;
+      }
+      .dataframe thead tr {
+        background: rgba(255, 255, 255, 0.05);
+        text-align: left;
+      }
+      .dataframe th {
+        padding: 15px;
+        font-weight: 600;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--glass-border);
+        min-width: 120px;
+      }
+      .dataframe tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        transition: 0.2s;
+      }
+      .dataframe tbody tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .dataframe td {
+        padding: 12px 15px;
+        color: var(--text-light);
+      }
+      .dataframe tbody th {
+        background: rgba(0, 0, 0, 0.2);
+        color: var(--text-dim);
+      }
+
+      /* --- DICTIONARY TABLE STYLE --- */
+      .dict-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      .dict-table th {
+        background: rgba(78, 84, 200, 0.2);
+        color: var(--accent);
+        padding: 15px;
+        text-align: left;
+        border-bottom: 2px solid var(--glass-border);
+      }
+      .dict-table td {
+        padding: 15px;
+        border-bottom: 1px solid var(--glass-border);
+        color: var(--text-dim);
+        vertical-align: top;
+      }
+      .dict-table tr:hover td {
+        color: var(--text-light);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .feature-tag {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-family: "Courier New", monospace;
+        color: var(--warning);
+        font-weight: bold;
+      }
+      .logic-tag {
+        font-family: "Courier New", monospace;
+        color: var(--success);
+        background: rgba(16, 185, 129, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+
+      @media (max-width: 768px) {
+        .page-header {
+          flex-direction: column;
+          text-align: center;
+          gap: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="brand-logo">
+        <i class="fas fa-shield-alt"></i> IsoFraud 
+        <span class="admin-badge">Admin</span>
+      </div>
+      <div class="user-info">
+        <span class="user-email">{{ admin_email }}</span>
+        <a href="{{ url_for('logout') }}" class="btn-logout">
+          <i class="fas fa-sign-out-alt"></i> Sign Out
+        </a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="page-header">
+        <div class="header-content">
+          <h2>
+            <i class="fas fa-microscope" style="color: var(--accent)"></i>
+            Dataset Lab
+          </h2>
+          <p>
+            Analisis perbandingan data mentah vs data hasil Feature Engineering
+            (Live Preview).
+          </p>
+        </div>
+        <a href="{{ url_for('admin_dashboard_page') }}" class="btn-back">
+          <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+      </div>
+
+      <div class="data-card">
+        <h3><i class="fas fa-database"></i> 1. Data Mentah (Raw Dataset)</h3>
+        <p
+          style="color: var(--text-dim); margin-bottom: 1rem; font-size: 0.9rem"
+        >
+          Preview 15 baris pertama dari file
+          <code>demo_transactions.csv</code> sebelum diproses.
+        </p>
+        <div class="table-wrapper">{{ data_before_html | safe }}</div>
+      </div>
+
+      <div class="data-card">
+        <h3><i class="fas fa-cogs"></i> 2. Data Setelah Feature Engineering</h3>
+        <p
+          style="color: var(--text-dim); margin-bottom: 1rem; font-size: 0.9rem"
+        >
+          Preview data setelah melalui proses transformasi, ekstraksi fitur
+          waktu, dan encoding kategori.
+        </p>
+        <div class="table-wrapper">{{ data_after_html | safe }}</div>
+      </div>
+
+      <div class="data-card">
+        <h3><i class="fas fa-book"></i> 3. Kamus Fitur (Feature Dictionary)</h3>
+        <p
+          style="color: var(--text-dim); margin-bottom: 1rem; font-size: 0.9rem"
+        >
+          Penjelasan detail mengenai logika pembuatan fitur baru yang digunakan
+          oleh model.
+        </p>
+
+        <div class="table-wrapper">
+          <table class="dict-table">
+            <thead>
+              <tr>
+                <th style="width: 20%">Nama Fitur</th>
+                <th style="width: 30%">Logika / Asal (Rumus)</th>
+                <th style="width: 50%">Penjelasan & Tujuan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- ===================== FITUR WAKTU ===================== -->
+              <tr>
+                <td colspan="3" style="background: rgba(78,84,200,0.1); color: var(--secondary); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 15px;">
+                  ⏰ Fitur Waktu (Temporal Features)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">Hour</span></td>
+                <td><span class="logic-tag">step % 24</span></td>
+                <td>Mengambil jam dalam sehari (0–23) dari langkah simulasi. Untuk menangkap pola waktu transaksi.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">Day</span></td>
+                <td><span class="logic-tag">step // 24</span></td>
+                <td>Mengambil hari ke-berapa sejak simulasi dimulai.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">IsNight</span></td>
+                <td><span class="logic-tag">Hour >= 22 OR Hour <= 6</span></td>
+                <td>(Boolean) Menandai transaksi yang terjadi di malam hari. Fraud sering terjadi saat jam tidur ketika pengawasan rendah.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">IsBusinessHours</span></td>
+                <td><span class="logic-tag">Hour >= 9 AND Hour <= 17</span></td>
+                <td>(Boolean) Menandai apakah transaksi terjadi di jam kerja normal (09:00–17:00). Transaksi di luar jam kerja bisa menjadi sinyal mencurigakan.</td>
+              </tr>
+
+              <!-- ===================== FITUR JUMLAH ===================== -->
+              <tr>
+                <td colspan="3" style="background: rgba(78,84,200,0.1); color: var(--secondary); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 15px;">
+                  💰 Fitur Jumlah Transaksi (Amount Features)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">amount_log</span></td>
+                <td><span class="logic-tag">log(1 + amount)</span></td>
+                <td>Logaritma dari jumlah uang. Menormalkan distribusi data karena kolom <em>amount</em> memiliki rentang sangat luas (highly skewed).</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">amount_sqrt</span></td>
+                <td><span class="logic-tag">sqrt(amount)</span></td>
+                <td>Akar kuadrat dari jumlah uang. Transformasi alternatif yang lebih ringan untuk menangani outlier ekstrem.</td>
+              </tr>
+
+              <!-- ===================== FITUR SALDO PENGIRIM ===================== -->
+              <tr>
+                <td colspan="3" style="background: rgba(78,84,200,0.1); color: var(--secondary); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 15px;">
+                  📤 Fitur Saldo Pengirim (Sender Balance Features)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">balance_change_orig</span></td>
+                <td><span class="logic-tag">newBalanceOrig - oldBalanceOrg</span></td>
+                <td>Selisih saldo pengirim sebelum dan sesudah transaksi. Digunakan untuk mengecek apakah saldo berkurang sesuai jumlah transfer.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">balance_change_orig_pct</span></td>
+                <td><span class="logic-tag">balance_change_orig / (oldBalanceOrg + 1)</span></td>
+                <td>Persentase perubahan saldo pengirim. Memberikan konteks relatif: transfer Rp1jt dari saldo Rp1jt berbeda signifikansinya dengan dari saldo Rp1M.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">sender_depleted</span></td>
+                <td><span class="logic-tag">newBalanceOrig == 0</span></td>
+                <td>(Boolean) Menandai pengirim yang mengosongkan seluruh saldonya dalam satu transaksi. Pola khas pencucian uang atau akun mule.</td>
+              </tr>
+
+              <!-- ===================== FITUR SALDO PENERIMA ===================== -->
+              <tr>
+                <td colspan="3" style="background: rgba(78,84,200,0.1); color: var(--secondary); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 15px;">
+                  📥 Fitur Saldo Penerima (Receiver Balance Features)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">balance_change_dest</span></td>
+                <td><span class="logic-tag">newBalanceDest - oldBalanceDest</span></td>
+                <td>Selisih saldo penerima sebelum dan sesudah transaksi. Membantu mendeteksi penerima yang tidak wajar.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">balance_change_dest_pct</span></td>
+                <td><span class="logic-tag">balance_change_dest / (oldBalanceDest + 1)</span></td>
+                <td>Persentase perubahan saldo penerima. Kenaikan saldo yang sangat drastis (ratusan persen) bisa menjadi sinyal fraud.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">receiver_new_account</span></td>
+                <td><span class="logic-tag">oldBalanceDest == 0</span></td>
+                <td>(Boolean) Menandai penerima dengan saldo awal nol (akun baru atau dormant). Akun penerima baru adalah red flag umum dalam fraud transfer.</td>
+              </tr>
+
+              <!-- ===================== KONSISTENSI TRANSAKSI ===================== -->
+              <tr>
+                <td colspan="3" style="background: rgba(78,84,200,0.1); color: var(--secondary); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 15px;">
+                  🔍 Konsistensi Transaksi (Consistency Check)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">expected_balance_orig</span></td>
+                <td><span class="logic-tag">oldBalanceOrg - amount</span></td>
+                <td>Saldo pengirim yang <em>seharusnya</em> tersisa setelah transaksi. Digunakan sebagai baseline untuk deteksi inkonsistensi.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">balance_inconsistent</span></td>
+                <td><span class="logic-tag">(oldBalance - amount) != newBalance</span></td>
+                <td>(Boolean) Menandai anomali matematika: sisa saldo di sistem tidak sama dengan (Saldo Awal − Jumlah Transfer). Indikasi kuat manipulasi sistem pada transaksi CASH_OUT dan TRANSFER.</td>
+              </tr>
+
+              <!-- ===================== AGREGASI HISTORIS ===================== -->
+              <tr>
+                <td colspan="3" style="background: rgba(78,84,200,0.1); color: var(--secondary); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 15px;">
+                  📊 Agregasi Historis per Pelanggan (Historical Aggregation Features)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">tx_count_24h</span></td>
+                <td><span class="logic-tag">rolling(24h).count() - 1</span></td>
+                <td>Jumlah transaksi yang dilakukan oleh pengirim yang sama dalam 24 jam terakhir (tidak termasuk transaksi saat ini). Transaksi beruntun dalam waktu singkat adalah sinyal fraud.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">tx_count_7d</span></td>
+                <td><span class="logic-tag">rolling(7×24h).count() - 1</span></td>
+                <td>Jumlah transaksi pengirim dalam 7 hari terakhir. Memberikan konteks frekuensi jangka menengah untuk mendeteksi anomali aktivitas.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">avg_amount_30d</span></td>
+                <td><span class="logic-tag">rolling(30d).mean(amount, shift=1)</span></td>
+                <td>Rata-rata jumlah transaksi pengirim selama 30 hari terakhir (historis, tidak termasuk transaksi saat ini). Menjadi baseline kebiasaan belanja normal pelanggan.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">max_amount_30d</span></td>
+                <td><span class="logic-tag">rolling(30d).max(amount, shift=1)</span></td>
+                <td>Nilai transaksi tertinggi pengirim dalam 30 hari terakhir. Digunakan sebagai batas atas historis untuk deteksi transaksi tidak normal.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">std_amount_30d</span></td>
+                <td><span class="logic-tag">rolling(30d).std(amount, shift=1)</span></td>
+                <td>Volatilitas atau standar deviasi jumlah transaksi pengirim dalam 30 hari. Pelanggan dengan pola stabil yang tiba-tiba bertransaksi besar menjadi anomali.</td>
+              </tr>
+
+              <!-- ===================== FLAG PERILAKU TIDAK WAJAR ===================== -->
+              <tr>
+                <td colspan="3" style="background: rgba(78,84,200,0.1); color: var(--secondary); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 15px;">
+                  🚨 Flag Perilaku Tidak Wajar (Unusual Behavior Flags)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">is_amount_unusual</span></td>
+                <td><span class="logic-tag">amount > 3 × avg_amount_30d</span></td>
+                <td>(Boolean) Menandai transaksi yang jumlahnya lebih dari 3 kali rata-rata historis pelanggan. Lonjakan tiba-tiba ini adalah indikator kuat transaksi mencurigakan.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">is_new_high_amount</span></td>
+                <td><span class="logic-tag">amount > max_amount_30d</span></td>
+                <td>(Boolean) Menandai transaksi yang melebihi rekor tertinggi pelanggan selama 30 hari terakhir. Merupakan "new high" yang patut diwaspadai.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">amount_vs_avg_ratio</span></td>
+                <td><span class="logic-tag">amount / (avg_amount_30d + 1)</span></td>
+                <td>Rasio jumlah transaksi saat ini terhadap rata-rata historis pelanggan. Nilai rasio tinggi (misal: 10×) menunjukkan transaksi jauh di atas kebiasaan normal.</td>
+              </tr>
+
+              <!-- ===================== PERILAKU WAKTU ===================== -->
+              <tr>
+                <td colspan="3" style="background: rgba(78,84,200,0.1); color: var(--secondary); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 15px;">
+                  🕐 Perilaku Waktu Pelanggan (Customer Time Behavior)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">usual_hour_customer</span></td>
+                <td><span class="logic-tag">expanding().mode(Hour)</span></td>
+                <td>Jam favorit pelanggan berdasarkan riwayat transaksi sebelumnya (mode historis). Digunakan sebagai referensi jam normal pelanggan tersebut.</td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">is_unusual_hour</span></td>
+                <td><span class="logic-tag">Hour != usual_hour_customer</span></td>
+                <td>(Boolean) Menandai transaksi yang terjadi di jam yang tidak biasa bagi pelanggan tersebut. Transaksi di luar jam kebiasaan meningkatkan risiko fraud.</td>
+              </tr>
+
+              <!-- ===================== ENCODING ===================== -->
+              <tr>
+                <td colspan="3" style="background: rgba(78,84,200,0.1); color: var(--secondary); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 15px;">
+                  🔢 Encoding Kategori (Categorical Encoding)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="feature-tag">type_encoded</span></td>
+                <td><span class="logic-tag">LabelEncoder(type)</span></td>
+                <td>Mengubah kategori teks jenis transaksi (CASH_IN, CASH_OUT, DEBIT, PAYMENT, TRANSFER) menjadi angka agar dapat diproses oleh algoritma Machine Learning.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

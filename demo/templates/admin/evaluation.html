@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evaluasi Model | IsoFraud Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+      .btn-download-metrics:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); /* Glow Hijau */
+        background: #34d399;
+      }
+
+      /* Update Media Query agar tombol rapi di HP */
+      @media (max-width: 768px) {
+        .page-header {
+          flex-direction: column;
+          gap: 1rem;
+        }
+        /* Bungkus tombol agar turun ke bawah dan rata tengah */
+        .page-header > div:last-child {
+          flex-direction: column;
+          width: 100%;
+        }
+        .btn-download-metrics,
+        .btn-back {
+          justify-content: center;
+          width: 100%;
+        }
+      }
+
+      :root {
+        --primary: #4e54c8;
+        --secondary: #8f94fb;
+        --accent: #00d2ff;
+        --dark-bg: #0f172a;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-light: #f8fafc;
+        --text-dim: #94a3b8;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      body {
+        background: radial-gradient(circle at top left, #1a1c2c, #000000);
+        color: var(--text-light);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Navbar */
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.2rem 5%;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--glass-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .brand-logo {
+        font-size: 1.4rem;
+        font-weight: 700;
+        background: linear-gradient(to right, #fff, #a5b4fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .admin-badge {
+        background: #ef4444;
+        color: #ffffff;
+        padding: 5px 14px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        -webkit-text-fill-color: white;
+        flex-shrink: 0;
+        border: none;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .user-email {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+      }
+      .btn-logout {
+        padding: 10px 28px;
+        border-radius: 50px;
+        background: #ef4444;
+        border: none;
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-logout:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+      }
+
+      /* Layout */
+      .container {
+        max-width: 1200px;
+        margin: 3rem auto;
+        padding: 0 20px;
+      }
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3rem;
+        background: var(--glass-bg);
+        padding: 1.5rem 2rem;
+        border-radius: 20px;
+        border: 1px solid var(--glass-border);
+      }
+      .header-content h2 {
+        font-size: 2rem;
+        margin-bottom: 5px;
+        color: var(--text-light);
+      }
+      .header-meta {
+        display: flex;
+        gap: 20px;
+        color: var(--text-dim);
+        font-size: 0.9rem;
+      }
+      .btn-back {
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-back:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* Section Boxes */
+      .glass-section {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 2.5rem;
+        margin-bottom: 3rem;
+        position: relative;
+      }
+      .section-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--glass-border);
+      }
+      .section-header h3 {
+        font-size: 1.4rem;
+        color: var(--text-light);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 5px;
+      }
+      .section-header p {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+      }
+
+      /* Metrics Grid */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+      .metric-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: 0.3s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+      }
+      .metric-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--accent);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .metric-card h4 {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+      .metric-value {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+      }
+
+      /* Deskripsi Metrik (NEW) */
+      .metric-desc {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        margin-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 8px;
+        font-style: italic;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Progress Bar */
+      .progress-container {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: auto;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        border-radius: 10px;
+        transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .bg-blue {
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        box-shadow: 0 0 10px var(--accent);
+      }
+      .bg-red {
+        background: linear-gradient(90deg, #991b1b, var(--danger));
+        box-shadow: 0 0 10px var(--danger);
+      }
+      .bg-green {
+        background: linear-gradient(90deg, #065f46, var(--success));
+        box-shadow: 0 0 10px var(--success);
+      }
+
+      /* Confusion Matrix Grid */
+      .cm-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+      }
+      .cm-card {
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--glass-border);
+      }
+      .cm-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: white;
+      }
+      .cm-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        color: var(--text-dim);
+      }
+      .cm-desc {
+        font-size: 0.7rem;
+        margin-top: 5px;
+        opacity: 0.8;
+      }
+      .cm-tp {
+        border-bottom: 3px solid var(--success);
+      }
+      .cm-tp .cm-value {
+        color: var(--success);
+      }
+      .cm-tn {
+        border-bottom: 3px solid var(--accent);
+      }
+      .cm-tn .cm-value {
+        color: var(--accent);
+      }
+      .cm-fp {
+        border-bottom: 3px solid var(--warning);
+      }
+      .cm-fp .cm-value {
+        color: var(--warning);
+      }
+      .cm-fn {
+        border-bottom: 3px solid var(--danger);
+      }
+      .cm-fn .cm-value {
+        color: var(--danger);
+      }
+
+      /* Charts */
+      .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+      .chart-full {
+        grid-column: 1 / -1;
+      }
+      .chart-card {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 1px solid var(--glass-border);
+      }
+      .chart-card h5 {
+        margin-bottom: 1rem;
+        color: var(--text-light);
+        font-size: 1rem;
+      }
+
+      /* CHART IMAGE - Zoomable */
+      .chart-img {
+        width: 100%;
+        border-radius: 8px;
+        transition: 0.3s;
+        cursor: zoom-in;
+      }
+      .chart-img:hover {
+        transform: scale(1.01);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      /* LIGHTBOX (ZOOM EFFECT) */
+      .lightbox {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        padding-top: 50px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.9);
+        align-items: center;
+        justify-content: center;
+      }
+      .lightbox-content {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 1200px;
+        border-radius: 10px;
+        animation: zoomIn 0.3s;
+      }
+      .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+        cursor: pointer;
+      }
+      .close-btn:hover {
+        color: var(--accent);
+      }
+      @keyframes zoomIn {
+        from {
+          transform: scale(0);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .page-header,
+        .header-meta {
+          flex-direction: column;
+          text-align: center;
+          gap: 1rem;
+        }
+        .cm-grid,
+        .charts-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="brand-logo">
+        <i class="fas fa-shield-alt"></i> IsoFraud
+        <span class="admin-badge">Admin</span>
+      </div>
+      <div class="user-info">
+        <span class="user-email">{{ admin_email }}</span>
+        <a href="{{ url_for('logout') }}" class="btn-logout"
+          ><i class="fas fa-sign-out-alt"></i> Sign Out</a
+        >
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="page-header">
+        <div class="header-content">
+          <h2>Laporan Evaluasi Model</h2>
+          <div class="header-meta">
+            <span
+              ><i class="far fa-calendar-alt"></i> Tgl: {{
+              evaluation.evaluation_date[:10] if evaluation.evaluation_date else
+              'N/A' }}</span
+            >
+            <span
+              ><i class="fas fa-database"></i> Dataset: {{
+              evaluation.dataset_name if evaluation.dataset_name else 'N/A'
+              }}</span
+            >
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px">
+          <a
+            href="{{ url_for('admin_download_metrics') }}"
+            class="btn-download-metrics"
+            style="
+              padding: 10px 20px;
+              background: var(--success);
+              color: #0f172a;
+              border-radius: 50px;
+              text-decoration: none;
+              font-size: 0.9rem;
+              font-weight: 600;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              transition: 0.3s;
+            "
+          >
+            <i class="fas fa-file-csv"></i> Download Metrik
+          </a>
+
+          <a href="{{ url_for('admin_dashboard_page') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Dashboard
+          </a>
+        </div>
+      </div>
+
+      <div class="glass-section">
+        <div class="section-header">
+          <h3><i class="fas fa-tachometer-alt"></i> Performa Utama</h3>
+          <p>Indikator efektivitas model secara keseluruhan.</p>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <h4>Accuracy</h4>
+            <div class="metric-value">
+              {{ "%.2f"|format((evaluation.accuracy * 100) if
+              evaluation.accuracy else 0) }}%
+            </div>
+            <div class="progress-container">
+              <div
+                class="progress-bar bg-blue"
+                data-width="{{ (evaluation.accuracy * 100) if evaluation.accuracy else 0 }}"
+              ></div>
+            </div>
+            <div class="metric-desc">
+              Total persentase prediksi yang benar (Fraud & Normal).
+            </div>
+          </div>
+          <div class="metric-card">
+            <h4>Precision</h4>
+            <div class="metric-value">
+              {{ "%.2f"|format((evaluation.precision * 100) if
+              evaluation.precision else 0) }}%
+            </div>
+            <div class="progress-container">
+              <div
+                class="progress-bar bg-blue"
+                data-width="{{ (evaluation.precision * 100) if evaluation.precision else 0 }}"
+              ></div>
+            </div>
+            <div class="metric-desc">
+              Ketepatan saat menuduh "Fraud" (Minimalkan Salah Tuduh).
+            </div>
+          </div>
+          <div class="metric-card">
+            <h4>Recall (TPR)</h4>
+            <div class="metric-value">
+              {{ "%.2f"|format((evaluation.recall * 100) if evaluation.recall
+              else 0) }}%
+            </div>
+            <div class="progress-container">
+              <div
+                class="progress-bar bg-blue"
+                data-width="{{ (evaluation.recall * 100) if evaluation.recall else 0 }}"
+              ></div>
+            </div>
+            <div class="metric-desc">
+              Kemampuan menemukan semua Fraud (Minimalkan Fraud Lolos).
+            </div>
+          </div>
+          <div class="metric-card">
+            <h4>F1-Score</h4>
+            <div class="metric-value">
+              {{ "%.2f"|format((evaluation.f1_score * 100) if
+              evaluation.f1_score else 0) }}%
+            </div>
+            <div class="progress-container">
+              <div
+                class="progress-bar bg-blue"
+                data-width="{{ (evaluation.f1_score * 100) if evaluation.f1_score else 0 }}"
+              ></div>
+            </div>
+            <div class="metric-desc">
+              Rata-rata harmonis antara Precision dan Recall.
+            </div>
+          </div>
+          <div class="metric-card">
+            <h4>ROC AUC</h4>
+            <div class="metric-value">
+              {{ "%.2f"|format((evaluation.roc_auc * 100) if evaluation.roc_auc
+              else 0) }}%
+            </div>
+            <div class="progress-container">
+              <div
+                class="progress-bar bg-blue"
+                data-width="{{ (evaluation.roc_auc * 100) if evaluation.roc_auc else 0 }}"
+              ></div>
+            </div>
+            <div class="metric-desc">
+              Kemampuan model membedakan kelas Normal dan Fraud.
+            </div>
+          </div>
+          <div class="metric-card">
+            <h4>MCC</h4>
+            <div class="metric-value">
+              {{ "%.2f"|format((evaluation.mcc * 100) if evaluation.mcc else 0)
+              }}%
+            </div>
+            <div class="progress-container">
+              <div
+                class="progress-bar bg-blue"
+                data-width="{{ ((evaluation.mcc + 1) * 50) if evaluation.mcc else 0 }}"
+              ></div>
+            </div>
+            <div class="metric-desc">
+              Koefisien korelasi kualitas prediksi pada data imbalance.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-section">
+        <div class="section-header">
+          <h3>
+            <i class="fas fa-exclamation-circle"></i> Analisis Kesalahan (Error
+            Rates)
+          </h3>
+          <p>Detail seberapa sering model melakukan kesalahan deteksi.</p>
+        </div>
+
+        <div
+          class="metrics-grid"
+          style="margin-bottom: 2rem; grid-template-columns: repeat(3, 1fr)"
+        >
+          <div class="metric-card">
+            <h4>Specificity (TNR)</h4>
+            <div class="metric-value">
+              {{ "%.2f"|format((evaluation.specificity * 100) if
+              evaluation.specificity else 0) }}%
+            </div>
+            <div class="progress-container">
+              <div
+                class="progress-bar bg-green"
+                data-width="{{ (evaluation.specificity * 100) if evaluation.specificity else 0 }}"
+              ></div>
+            </div>
+            <div class="metric-desc">
+              Persentase transaksi Normal yang benar dikenali sebagai Normal.
+            </div>
+          </div>
+          <div class="metric-card">
+            <h4 style="color: #fca5a5">False Positive Rate (FPR)</h4>
+            <div class="metric-value" style="color: #fca5a5">
+              {{ "%.2f"|format((evaluation.fpr * 100) if evaluation.fpr else 0)
+              }}%
+            </div>
+            <div class="progress-container">
+              <div
+                class="progress-bar bg-red"
+                data-width="{{ (evaluation.fpr * 100) if evaluation.fpr else 0 }}"
+              ></div>
+            </div>
+            <div class="metric-desc">
+              Persentase Alarm Palsu (Normal dituduh Fraud).
+            </div>
+          </div>
+          <div class="metric-card">
+            <h4 style="color: #fca5a5">False Negative Rate (FNR)</h4>
+            <div class="metric-value" style="color: #fca5a5">
+              {{ "%.2f"|format((evaluation.fnr * 100) if evaluation.fnr else 0)
+              }}%
+            </div>
+            <div class="progress-container">
+              <div
+                class="progress-bar bg-red"
+                data-width="{{ (evaluation.fnr * 100) if evaluation.fnr else 0 }}"
+              ></div>
+            </div>
+            <div class="metric-desc">
+              Persentase Fraud yang gagal terdeteksi (Lolos).
+            </div>
+          </div>
+        </div>
+
+        <h4
+          style="
+            margin-bottom: 1rem;
+            color: var(--text-dim);
+            text-align: center;
+            font-size: 0.9rem;
+          "
+        >
+          DISTRIBUSI PREDIKSI (JUMLAH DATA)
+        </h4>
+        <div class="cm-grid">
+          <div class="cm-card cm-tp">
+            <div class="cm-label">True Positive (TP)</div>
+            <div class="cm-value">{{ evaluation.tp }}</div>
+            <div class="cm-desc" style="color: var(--success)">
+              Fraud Terdeteksi Benar
+            </div>
+          </div>
+          <div class="cm-card cm-fp">
+            <div class="cm-label">False Positive (FP)</div>
+            <div class="cm-value">{{ evaluation.fp }}</div>
+            <div class="cm-desc" style="color: #f59e0b">
+              Normal Terdeteksi Fraud
+            </div>
+          </div>
+          <div class="cm-card cm-tn">
+            <div class="cm-label">True Negative (TN)</div>
+            <div class="cm-value">{{ evaluation.tn }}</div>
+            <div class="cm-desc" style="color: var(--accent)">
+              Normal Terdeteksi Benar
+            </div>
+          </div>
+          <div class="cm-card cm-fn">
+            <div class="cm-label">False Negative (FN)</div>
+            <div class="cm-value">{{ evaluation.fn }}</div>
+            <div class="cm-desc" style="color: var(--danger)">
+              Fraud Terdeteksi Normal (Bahaya!)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-section">
+        <div class="section-header">
+          <h3><i class="fas fa-chart-area"></i> Visualisasi Grafik</h3>
+          <p>Klik gambar untuk memperbesar (Zoom).</p>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card chart-full">
+            <h5>Confusion Matrix Heatmap</h5>
+            <img
+              src="{{ url_for('static', filename='images/eval_confusion_matrix.png') }}"
+              class="chart-img"
+              style="max-width: 900px; margin: 0 auto; display: block"
+            />
+          </div>
+
+          <div class="chart-card">
+            <h5>ROC Curve (AUC: {{ "%.2f"|format(evaluation.roc_auc) }})</h5>
+            <img
+              src="{{ url_for('static', filename='images/eval_roc_curve.png') }}"
+              class="chart-img"
+            />
+          </div>
+          <div class="chart-card">
+            <h5>Precision-Recall Curve</h5>
+            <img
+              src="{{ url_for('static', filename='images/eval_pr_curve.png') }}"
+              class="chart-img"
+            />
+          </div>
+
+          <div class="chart-card">
+            <h5>Fitur Paling Berpengaruh</h5>
+            <img
+              src="{{ url_for('static', filename='images/eda_feature_importance_after.png') }}"
+              class="chart-img"
+            />
+          </div>
+          <div class="chart-card">
+            <h5>Metrics Comparison (Train vs Test)</h5>
+            <img
+              src="{{ url_for('static', filename='images/eval_metrics_comparison.png') }}"
+              class="chart-img"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="imageModal" class="lightbox" onclick="closeLightbox()">
+      <span class="close-btn" onclick="closeLightbox()">&times;</span>
+      <img class="lightbox-content" id="lightboxImg" />
+    </div>
+
+    <script>
+      // Animasi Progress Bar
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(() => {
+          const bars = document.querySelectorAll(".progress-bar");
+          bars.forEach((bar) => {
+            const targetWidth = bar.getAttribute("data-width");
+            bar.style.width = targetWidth + "%";
+          });
+        }, 300);
+      });
+
+      // Logic Lightbox (Klik Gambar)
+      const modal = document.getElementById("imageModal");
+      const modalImg = document.getElementById("lightboxImg");
+      const images = document.querySelectorAll(".chart-img");
+
+      images.forEach((img) => {
+        img.onclick = function (e) {
+          e.stopPropagation(); // Mencegah modal langsung tertutup
+          modal.style.display = "flex";
+          modalImg.src = this.src;
+        };
+      });
+
+      function closeLightbox() {
+        modal.style.display = "none";
+      }
+    </script>
+  </body>
+</html>

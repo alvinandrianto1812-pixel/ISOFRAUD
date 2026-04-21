@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard User | IsoFraud </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary: #4e54c8; --secondary: #8f94fb; --accent: #00d2ff;
+            --dark-bg: #0f172a; --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-light: #f8fafc; --text-dim: #94a3b8;
+            --success: #10b981; --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: radial-gradient(circle at top left, #1a1c2c, #000000); color: var(--text-light); min-height: 100vh; overflow-x: hidden; }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.2rem 5%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 100;
+        }
+        .brand-logo {
+            font-size: 1.4rem; font-weight: 700;
+            background: linear-gradient(to right, #fff, #a5b4fc); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .user-role {
+            background: #3b82f6; color: #ffffff; padding: 5px 14px; border-radius: 50px;
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); -webkit-text-fill-color: white; flex-shrink: 0;
+        }
+        .user-info { display: flex; align-items: center; gap: 20px; }
+        .user-email { color: var(--text-dim); font-size: 0.9rem; display: none; } 
+        @media(min-width: 768px) { .user-email { display: block; } }
+
+        .btn-logout {
+            padding: 10px 28px; border-radius: 50px; background: #ef4444; border: none;
+            color: white; text-decoration: none; font-size: 0.9rem; font-weight: 600;
+            transition: 0.3s; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); display: flex; align-items: center; gap: 8px;
+        }
+        .btn-logout:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(239, 68, 68, 0.5); }
+
+        /* --- LAYOUT UTAMA --- */
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 20px; }
+
+        /* HEADER SECTION (ROBOT + TEXT) */
+        .dashboard-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 3rem; background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 2rem 3rem; position: relative; overflow: hidden;
+        }
+        
+        .header-text { z-index: 2; max-width: 60%; }
+        .header-text h2 { 
+            font-size: 2.5rem; margin-bottom: 10px; 
+            background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+        }
+        .header-text p { color: var(--text-dim); font-size: 1.1rem; }
+
+        .robot-container {
+            position: relative; width: 180px; height: 140px;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 20px;
+        }
+        
+        .bot-head {
+            width: 140px; height: 110px; /* Lebih kecil dari login */
+            background: #0f172a; border: 2px solid #00d2ff; border-radius: 25px;
+            position: relative; box-shadow: 0 0 20px rgba(0, 210, 255, 0.2), inset 0 0 20px rgba(0, 210, 255, 0.1);
+            display: flex; justify-content: center; align-items: center; gap: 15px;
+            transition: transform 0.1s ease-out;
+        }
+        .bot-ear {
+            position: absolute; width: 12px; height: 40px; background: #00d2ff; top: 50%; transform: translateY(-50%); border-radius: 4px; box-shadow: 0 0 10px #00d2ff;
+        }
+        .ear-left { left: -18px; border-right: 3px solid #0f172a; }
+        .ear-right { right: -18px; border-left: 3px solid #0f172a; }
+
+        .eye {
+            width: 35px; height: 35px; background: #000; border-radius: 50%; border: 2px solid #333;
+            position: relative; overflow: hidden; box-shadow: inset 0 0 5px #000;
+        }
+        .pupil {
+            width: 14px; height: 14px; background: #00d2ff; border-radius: 50%;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 8px #00d2ff;
+        }
+        .mouth {
+            position: absolute; bottom: 20px; width: 25px; height: 3px; background: #00d2ff; border-radius: 2px; box-shadow: 0 0 8px #00d2ff; transition: width 0.3s;
+        }
+        
+        @keyframes headShake {
+            0% { transform: translateX(0); } 25% { transform: translateX(-5px) rotate(-3deg); }
+            50% { transform: translateX(0); } 75% { transform: translateX(5px) rotate(3deg); } 100% { transform: translateX(0); }
+        }
+        .is-idle { animation: headShake 3s ease-in-out infinite; }
+        .is-idle .mouth { width: 12px; }
+
+        /* --- CARDS GRID --- */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
+        .glass-card {
+            background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 2rem; position: relative; overflow: hidden; transition: 0.3s;
+        }
+        .glass-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-5px); }
+
+        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5rem; }
+        .card-icon {
+            width: 50px; height: 50px; border-radius: 12px; background: rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent);
+            border: 1px solid var(--glass-border);
+        }
+        .card-title h3 { font-size: 1.2rem; margin-bottom: 4px; }
+        .card-title p { font-size: 0.85rem; color: var(--text-dim); }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed var(--glass-border); border-radius: 16px; padding: 3rem 1rem; text-align: center;
+            transition: 0.3s; cursor: pointer; position: relative; background: rgba(0,0,0,0.2);
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--accent); background: rgba(0, 210, 255, 0.05); box-shadow: 0 0 20px rgba(0, 210, 255, 0.1);
+        }
+        .upload-area i { font-size: 3rem; color: var(--text-dim); margin-bottom: 1rem; transition: 0.3s; }
+        .upload-area:hover i { color: var(--accent); transform: scale(1.1); }
+        .file-input { display: none; }
+
+        .btn-browse {
+            background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none;
+            padding: 8px 20px; border-radius: 50px; font-size: 0.9rem; font-weight: 600; margin-top: 1rem; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.4); transition: 0.3s;
+        }
+        .btn-browse:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(78, 84, 200, 0.6); }
+
+        /* Loading */
+        .loading-container { display: none; text-align: center; margin-top: 2rem; }
+        .loading-container.show { display: block; animation: fadeIn 0.5s; }
+        .spinner {
+            width: 50px; height: 50px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent);
+            border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { color: var(--text-dim); font-size: 0.9rem; letter-spacing: 1px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+        /* Requirements */
+        .requirements { margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--glass-border); }
+        .requirements h4 { font-size: 0.9rem; color: var(--accent); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px; }
+        .requirements ul { list-style: none; padding-left: 5px; }
+        .requirements li { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+        .requirements li i { color: var(--success); font-size: 0.7rem; }
+
+        /* History Button */
+        .btn-history {
+            display: block; width: 100%; padding: 15px; text-align: center; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-light); text-decoration: none;
+            font-weight: 600; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-history:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); color: var(--accent); }
+
+        /* Alert */
+        .alert-box { padding: 15px; border-radius: 12px; margin-bottom: 2rem; display: none; animation: fadeIn 0.5s; border: 1px solid transparent; }
+        .alert-success { background: rgba(16, 185, 129, 0.1); border-color: var(--success); color: #6ee7b7; }
+        .alert-error { background: rgba(239, 68, 68, 0.1); border-color: var(--danger); color: #fca5a5; }
+        .alert-link { color: white; text-decoration: underline; font-weight: bold; margin-left: 5px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media(max-width: 768px) {
+            .dashboard-header { flex-direction: column-reverse; text-align: center; gap: 20px; padding: 2rem; }
+            .header-text { max-width: 100%; }
+            .robot-container { margin-right: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="brand-logo">
+            <i class="fas fa-shield-alt"></i> 
+            IsoFraud  
+            <span class="user-role">User</span>
+        </div>
+        <div class="user-info">
+            <span class="user-email">{{ user_email }}</span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <div class="dashboard-header">
+            <div class="header-text">
+                <h2>Dashboard Deteksi</h2>
+                <p>Sistem siap menganalisis transaksi Anda. Robot kami akan memantau proses upload dan deteksi secara langsung.</p>
+            </div>
+            
+            <div class="robot-container">
+                <div class="bot-head" id="botHead">
+                    <div class="bot-ear ear-left"></div>
+                    <div class="bot-ear ear-right"></div>
+                    
+                    <div class="eye"><div class="pupil" id="pupilLeft"></div></div>
+                    <div class="eye"><div class="pupil" id="pupilRight"></div></div>
+
+                    <div class="mouth"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="result-alert" class="alert-box"></div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert-box alert-{{ category }}" style="display: block;">
+                        <i class="fas fa-info-circle"></i> {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="card-grid">
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <div class="card-title">
+                        <h3>Upload Dataset</h3>
+                        <p>Format CSV (Max 300MB)</p>
+                    </div>
+                </div>
+
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                    <input type="file" id="fileInput" class="file-input" accept=".csv">
+                    <i class="fas fa-file-csv"></i>
+                    <p style="font-weight:600; margin-bottom:0.5rem;">Klik atau Seret File CSV</p>
+                    <p style="font-size:0.8rem; color:var(--text-dim);">Pastikan format kolom sesuai standar</p>
+                    <button class="btn-browse">Pilih File</button>
+                </div>
+
+                <div class="loading-container" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <p class="loading-text">MENGANALISIS TRANSAKSI...</p>
+                </div>
+
+                <div class="requirements">
+                    <h4><i class="fas fa-list-check"></i> Kolom Wajib:</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> step, type, amount</li>
+                        <li><i class="fas fa-check"></i> nameOrig, oldbalanceOrg, newbalanceOrig</li>
+                        <li><i class="fas fa-check"></i> nameDest, oldbalanceDest, newbalanceDest</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-card" style="display: flex; flex-direction: column; justify-content: center;">
+                <div class="card-header">
+                    <div class="card-icon" style="color: var(--secondary);"><i class="fas fa-history"></i></div>
+                    <div class="card-title">
+                        <h3>Riwayat Analisis</h3>
+                        <p>Akses kembali laporan deteksi sebelumnya</p>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; padding: 2rem 0; opacity: 0.7;">
+                    <i class="fas fa-chart-pie" style="font-size: 5rem; margin-bottom: 1rem; color: var(--glass-border);"></i>
+                    <p style="font-size: 0.9rem; color: var(--text-dim);">Semua hasil analisis Anda tersimpan aman di sini.</p>
+                </div>
+
+                <a href="{{ url_for('history_page') }}" class="btn-history">
+                    Lihat Semua Riwayat <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LOGIKA ANIMASI ROBOT ---
+        const botHead = document.getElementById('botHead');
+        const pupilLeft = document.getElementById('pupilLeft');
+        const pupilRight = document.getElementById('pupilRight');
+        let idleTimer;
+
+        function moveEye(eye, pupil, mouseX, mouseY) {
+            const eyeRect = eye.getBoundingClientRect();
+            const eyeCenterX = eyeRect.left + eyeRect.width / 2;
+            const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+            const angle = Math.atan2(mouseY - eyeCenterY, mouseX - eyeCenterX);
+            const distance = Math.min(8, Math.hypot(mouseX - eyeCenterX, mouseY - eyeCenterY)); // Jarak pupil lebih kecil di dashboard
+            const pupilX = Math.cos(angle) * distance;
+            const pupilY = Math.sin(angle) * distance;
+            pupil.style.transform = `translate(calc(-50% + ${pupilX}px), calc(-50% + ${pupilY}px))`;
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            botHead.classList.remove('is-idle');
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => { botHead.classList.add('is-idle'); }, 2000);
+
+            const eyeLeftEl = pupilLeft.parentElement;
+            const eyeRightEl = pupilRight.parentElement;
+            moveEye(eyeLeftEl, pupilLeft, e.clientX, e.clientY);
+            moveEye(eyeRightEl, pupilRight, e.clientX, e.clientY);
+        });
+        setTimeout(() => { botHead.classList.add('is-idle'); }, 1000);
+
+
+        // --- 2. LOGIKA UPLOAD FILE ---
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultAlert = document.getElementById('result-alert');
+
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) uploadFile(e.target.files[0]);
+        });
+
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault(); uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                if (file.name.endsWith('.csv')) uploadFile(file);
+                else showResult('Hanya file CSV yang diperbolehkan!', 'error');
+            }
+        });
+
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            uploadArea.style.display = 'none';
+            loadingIndicator.classList.add('show');
+            resultAlert.style.display = 'none';
+
+            fetch('/upload', { method: 'POST', body: formData })
+            .then(response => response.json())
+            .then(data => {
+                loadingIndicator.classList.remove('show');
+                uploadArea.style.display = 'block';
+                
+                if (data.success) {
+                    showResult(`
+                        <div>
+                            <strong><i class="fas fa-check-circle"></i> Analisis Selesai!</strong><br>
+                            <span style="font-size:0.9rem; opacity:0.8;">
+                            Total: ${data.summary.total_data} | Fraud: ${data.summary.fraud_detected}
+                            </span><br>
+                            <a href="/report/${data.dataset_id}" class="alert-link">Lihat Laporan Detail <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    `, 'success');
+                    fileInput.value = '';
+                } else {
+                    showResult(data.error || 'Gagal memproses file.', 'error');
+                }
+            })
+            .catch(error => {
+                loadingIndicator.classList.remove('show');
+                uploadArea.style.display = 'block';
+                showResult('Terjadi kesalahan jaringan: ' + error.message, 'error');
+            });
+        }
+
+        function showResult(html, type) {
+            resultAlert.className = `alert-box alert-${type}`;
+            resultAlert.innerHTML = html;
+            resultAlert.style.display = 'block';
+            resultAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>

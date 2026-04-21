@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasil Deteksi | IsoFraud</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
+      :root {
+        --primary: #4e54c8;
+        --secondary: #8f94fb;
+        --accent: #00d2ff;
+        --dark-bg: #0f172a;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-light: #f8fafc;
+        --text-dim: #94a3b8;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      body {
+        background: radial-gradient(circle at top left, #1a1c2c, #000000);
+        color: var(--text-light);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.2rem 5%;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--glass-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .brand-logo {
+        font-size: 1.4rem;
+        font-weight: 700;
+        background: linear-gradient(to right, #fff, #a5b4fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .user-role {
+        background: #3b82f6;
+        color: #ffffff;
+        padding: 5px 14px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        -webkit-text-fill-color: white;
+        flex-shrink: 0;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .user-email {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        display: none;
+      }
+      @media (min-width: 768px) {
+        .user-email {
+          display: block;
+        }
+      }
+
+      .btn-logout {
+        padding: 10px 28px;
+        border-radius: 50px;
+        background: #ef4444;
+        border: none;
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-logout:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(239, 68, 68, 0.5);
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 3rem auto;
+        padding: 0 20px;
+      }
+
+      .report-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+      .file-title h2 {
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+        color: var(--text-light);
+      }
+      .file-meta {
+        display: flex;
+        gap: 20px;
+        color: var(--text-dim);
+        font-size: 0.9rem;
+      }
+      .file-meta span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .file-meta i {
+        color: var(--accent);
+      }
+
+      .btn-back {
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: var(--text-light);
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: 0.3s;
+      }
+      .btn-back:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .sum-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: 0.3s;
+      }
+      .sum-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .sum-card h3 {
+        font-size: 0.85rem;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+      .sum-card .value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-light);
+      }
+      .sum-card .icon {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 2.5rem;
+        opacity: 0.2;
+      }
+
+      .card-total {
+        border-left: 4px solid var(--primary);
+      }
+      .card-fraud {
+        border-left: 4px solid var(--danger);
+      }
+      .card-fraud .value {
+        color: #fca5a5;
+        text-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+      }
+      .card-safe {
+        border-left: 4px solid var(--success);
+      }
+      .card-safe .value {
+        color: #6ee7b7;
+      }
+
+      .download-box {
+        background: linear-gradient(
+          45deg,
+          rgba(78, 84, 200, 0.2),
+          rgba(143, 148, 251, 0.2)
+        );
+        border: 1px solid var(--primary);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .dl-text h3 {
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+      }
+      .dl-text p {
+        font-size: 0.9rem;
+        color: var(--text-dim);
+      }
+
+      .btn-download {
+        background: var(--success);
+        color: #0f172a;
+        padding: 10px 24px;
+        border-radius: 50px;
+        font-weight: 700;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        transition: 0.3s;
+      }
+      .btn-download:hover {
+        transform: scale(1.05);
+        background: #34d399;
+      }
+
+      .results-section {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        overflow: hidden;
+      }
+      .results-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        background: rgba(0, 0, 0, 0.2);
+      }
+      .results-header h3 {
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .results-header p {
+        font-size: 0.85rem;
+        color: var(--text-dim);
+        margin-top: 8px;
+      }
+
+      .table-responsive {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+
+      thead {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      th {
+        padding: 1rem 0.8rem;
+        text-align: left;
+        color: var(--text-dim);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: 0.2s;
+      }
+      tbody tr:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      td {
+        padding: 0.9rem 0.8rem;
+        color: var(--text-light);
+      }
+
+      .score-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        white-space: nowrap;
+      }
+      .score-high {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.4);
+      }
+
+      .badge {
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .badge-yes {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .badge-no {
+        background: rgba(16, 185, 129, 0.2);
+        color: #6ee7b7;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      .empty-state {
+        padding: 3rem;
+        text-align: center;
+        color: var(--text-dim);
+      }
+
+      .feature-col {
+        background: rgba(0, 210, 255, 0.05);
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="brand-logo">
+        <i class="fas fa-shield-alt"></i>
+        IsoFraud
+        <span class="user-role">User</span>
+      </div>
+      <div class="user-info">
+        <span class="user-email">{{ user_email }}</span>
+        <a href="{{ url_for('logout') }}" class="btn-logout">
+          <i class="fas fa-sign-out-alt"></i> Sign Out
+        </a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="report-header">
+        <div class="file-title">
+          <h2>
+            <i class="far fa-file-alt" style="color: var(--accent); margin-right: 10px"></i>
+            {{ dataset.original_filename }}
+          </h2>
+          <div class="file-meta">
+            <span><i class="far fa-clock"></i> {{ dataset.upload_at[:19].replace('T', ' ') }}</span>
+            <span><i class="fas fa-check-circle" style="color: var(--success)"></i> {{ dataset.status }}</span>
+          </div>
+        </div>
+        <a href="{{ url_for('history_page') }}" class="btn-back">
+          <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+      </div>
+
+      <div class="summary-grid">
+        <div class="sum-card card-total">
+          <div class="icon"><i class="fas fa-database"></i></div>
+          <h3>Total Transaksi</h3>
+          <div class="value">{{ summary.total_data }}</div>
+        </div>
+        <div class="sum-card card-fraud">
+          <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+          <h3>Terdeteksi Fraud</h3>
+          <div class="value">{{ summary.fraud_detected }}</div>
+        </div>
+        <div class="sum-card card-safe">
+          <div class="icon"><i class="fas fa-shield-alt"></i></div>
+          <h3>Transaksi Aman</h3>
+          <div class="value">{{ summary.non_fraud }}</div>
+        </div>
+      </div>
+
+      <div class="download-box">
+        <div class="dl-text">
+          <h3><i class="fas fa-download"></i> Unduh Laporan Lengkap</h3>
+          <p>File CSV lengkap dengan semua fitur + prediksi fraud untuk setiap transaksi.</p>
+        </div>
+        <a href="{{ url_for('download_report', dataset_id=dataset.dataset_id) }}" class="btn-download">
+          <span>Download CSV</span> <i class="fas fa-cloud-download-alt"></i>
+        </a>
+      </div>
+
+      <div class="results-section">
+        <div class="results-header">
+          <h3><i class="fas fa-search"></i> Preview Data Fraud (Top 50)</h3>
+          <p>Menampilkan fitur original + fitur engineered penting yang mempengaruhi deteksi fraud</p>
+        </div>
+
+        <div class="table-responsive">
+          {% if fraud_data %}
+          <table>
+            <thead>
+              <tr>
+                <th>Step</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Old Balance Org</th>
+                <th>New Balance Orig</th>
+                <th class="feature-col">Hour</th>
+                <th class="feature-col">🌙 Night</th>
+                <th class="feature-col">⚠️ Unusual Amount</th>
+                <th class="feature-col">📈 New High</th>
+                <th class="feature-col">💸 Depleted</th>
+                <th>Anomaly Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in fraud_data %}
+              <tr>
+                <td>{{ row.get('step', '-') }}</td>
+                <td><span style="color: var(--accent); font-weight: 600">{{ row.get('type', '-') }}</span></td>
+                <td>{{ "%.2f"|format(row.get('amount', 0)) }}</td>
+                <td>{{ "%.2f"|format(row.get('oldbalanceOrg', 0)) }}</td>
+                <td>{{ "%.2f"|format(row.get('newbalanceOrig', 0)) }}</td>
+                
+                <td class="feature-col">{{ row.get('Hour', '-') }}</td>
+                <td class="feature-col">
+                  {% if row.get('IsNight') == 1 %}
+                    <span class="badge badge-yes">YES</span>
+                  {% elif row.get('IsNight') == 0 %}
+                    <span class="badge badge-no">NO</span>
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td class="feature-col">
+                  {% if row.get('is_amount_unusual') == 1 %}
+                    <span class="badge badge-yes">YES</span>
+                  {% elif row.get('is_amount_unusual') == 0 %}
+                    <span class="badge badge-no">NO</span>
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td class="feature-col">
+                  {% if row.get('is_new_high_amount') == 1 %}
+                    <span class="badge badge-yes">YES</span>
+                  {% elif row.get('is_new_high_amount') == 0 %}
+                    <span class="badge badge-no">NO</span>
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td class="feature-col">
+                  {% if row.get('sender_depleted') == 1 %}
+                    <span class="badge badge-yes">YES</span>
+                  {% elif row.get('sender_depleted') == 0 %}
+                    <span class="badge badge-no">NO</span>
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                
+                <td>
+                  <span class="score-badge score-high">
+                    {{ "%.4f"|format(row.get('Anomaly Score', 0)) }}
+                  </span>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          
+          <div style="padding: 1.5rem; background: rgba(0, 0, 0, 0.2); border-top: 1px solid var(--glass-border);">
+            <h4 style="color: var(--text-light); margin-bottom: 10px; font-size: 0.9rem;">
+              <i class="fas fa-info-circle" style="color: var(--accent);"></i> 
+              Penjelasan Fitur Engineered
+            </h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; font-size: 0.8rem; color: var(--text-dim);">
+              <div><strong style="color: var(--accent);">Hour:</strong> Jam transaksi (0-23)</div>
+              <div><strong style="color: var(--accent);">🌙 Night:</strong> Transaksi malam hari (fraud risk higher)</div>
+              <div><strong style="color: var(--accent);">⚠️ Unusual Amount:</strong> Amount > 3x rata-rata historis</div>
+              <div><strong style="color: var(--accent);">📈 New High:</strong> Amount tertinggi sepanjang history customer</div>
+              <div><strong style="color: var(--accent);">💸 Depleted:</strong> Saldo pengirim habis total (red flag)</div>
+            </div>
+          </div>
+          
+          {% else %}
+          <div class="empty-state">
+            <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
+            <h3>Aman! Tidak ada transaksi mencurigakan.</h3>
+            <p>Semua data dalam file ini dinilai normal oleh sistem.</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

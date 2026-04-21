@@ -7,10 +7,10 @@ transactions using unsupervised machine learning.
 
 ## Tech Stack
 
-- **ML Model**: Isolation Forest (Anomaly Detection)
+- **ML Model**: Isolation Forest (Fraud Detection)
 - **Backend**: Python · Flask
 - **Frontend**: HTML · CSS · Jinja2
-- **Database**: MySQL
+- **Database**: Supabase
 - **Notebook**: Jupyter (EDA + Model Training)
 
 ## Features
